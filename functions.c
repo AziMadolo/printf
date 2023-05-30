@@ -9,8 +9,10 @@
  */
 int print_char(va_list types)
 {
-	char c = va_arg(types, int);
-	char buffer[2] = {c, '\0'};
+	char c = (char)va_arg(types, int);
+	char buffer[2] = {0};
+
+	buffer[0] = c;
 	write(1, buffer, 1);
 	return (1);
 }
@@ -24,13 +26,13 @@ int print_char(va_list types)
  */
 int print_string(va_list types)
 {
-	int count = 0;
 	char *str = va_arg(types, char *);
+	int count = 0;
 
 	if (str == NULL)
 		str = "(null)";
 
-	while (*str != '\0')
+	while (*str)
 	{
 		write(1, str, 1);
 		str++;
@@ -63,8 +65,8 @@ int print_percent(va_list types)
  */
 int print_int(va_list types)
 {
-	int count = 0;
 	int n = va_arg(types, int);
+	int count = 0;
 	unsigned int num;
 
 	if (n < 0)
@@ -125,7 +127,7 @@ int print_binary(va_list types)
 	unsigned int n = va_arg(types, unsigned int);
 	int count = 0;
 	char buffer[32];
-	int i = 0;
+	int i;
 
 	if (n == 0)
 	{
@@ -133,17 +135,21 @@ int print_binary(va_list types)
 		return (1);
 	}
 
+	for (i = 0; i < 32; i++)
+		buffer[i] = '0';
+
+	i = 0;
 	while (n > 0)
 	{
 		buffer[i++] = '0' + (n % 2);
 		n /= 2;
 	}
 
-	while (i > 0)
+	for (i = 31; i >= 0; i--)
 	{
-		write(1, &buffer[--i], 1);
+		write(1, &buffer[i], 1);
 		count++;
 	}
 
-	return (count);
+	return (count)
 }
