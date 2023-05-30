@@ -10,7 +10,8 @@
 int print_char(va_list types)
 {
 	char c = va_arg(types, int);
-	write(1, &c, 1);
+	char buffer[2] = {c, '\0'};
+	write(1, buffer, 1);
 	return (1);
 }
 
@@ -48,6 +49,7 @@ int print_string(va_list types)
  */
 int print_percent(va_list types)
 {
+	(void)types;
 	write(1, "%", 1);
 	return (1);
 }
@@ -121,9 +123,9 @@ int print_int_recursive(unsigned int num)
 int print_binary(va_list types)
 {
 	unsigned int n = va_arg(types, unsigned int);
-	unsigned int m = 2147483648; /* (2 ^ 31) */
 	int count = 0;
-	char digit;
+	char buffer[32];
+	int i = 0;
 
 	if (n == 0)
 	{
@@ -131,16 +133,16 @@ int print_binary(va_list types)
 		return (1);
 	}
 
-	while (m > n)
-		m /= 2;
-
-	while (m != 0)
+	while (n > 0)
 	{
-		digit = '0' + (n / m);
-		write(1, &digit, 1);
+		buffer[i++] = '0' + (n % 2);
+		n /= 2;
+	}
+
+	while (i > 0)
+	{
+		write(1, &buffer[--i], 1);
 		count++;
-		n %= m;
-		m /= 2;
 	}
 
 	return (count);
